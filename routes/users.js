@@ -7,7 +7,7 @@ const router = express.Router();
 
 
 // http://localhost:4000/users/allusers
-router.post('/allusers', async (req, res) =>{
+router.get('/allusers', async (req, res) =>{
     console.log(req.body);
     const tempEmail = req.body.email;
     const tempPassword = req.body.password;

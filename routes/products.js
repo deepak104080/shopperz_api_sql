@@ -49,12 +49,11 @@ router.post('/addproduct', async (req, res) => {
 // http://localhost:4000/products/searchbyid/{product_id}
 router.get('/searchbyid/:tempid', async (req, res) =>{
     console.log(req.params.tempid);
+    let temp = req.params.tempid;
     try{
-        // const response = await Product.findOne({id: req.params.tempid});
-        // show data on ejs template
-        // res.render('ejsfile3', {response});
-
-        res.status(200).json('response');
+        const response = await db.promise().query(`SELECT * FROM products WHERE id= ${temp}`);
+        
+        res.status(200).json(response[0][0]);
     }
     catch(err){
         res.status(400).json({Error: err.message})
