@@ -33,13 +33,13 @@ router.post('/login', async (req, res) =>{
     try{
         // const response = await User.findOne({email: tempEmail});
         const response = await db.promise().query(`SELECT * FROM users WHERE email = '${tempEmail}' `);
-        console.log(response[0]);
+        console.log(response[0][0]);
         const data = response[0];
         if(data.length !== 0) {
             console.log(data[0].password, typeof(data[0].password), tempPassword, typeof(tempPassword));
             if(data[0].password === tempPassword) {
                 //successfull login
-                res.status(200).json(data);
+                res.status(200).json(data[0]);
             }
             else {
                 //password incorrect
