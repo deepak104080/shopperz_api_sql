@@ -3,6 +3,7 @@ const db = require('../db');
 
 const router = express.Router();
 
+const jwt = require('jsonwebtoken');
 
 
 
@@ -39,7 +40,15 @@ router.post('/login', async (req, res) =>{
             console.log(data[0].password, typeof(data[0].password), tempPassword, typeof(tempPassword));
             if(data[0].password === tempPassword) {
                 //successfull login
-                res.status(200).json(data[0]);
+                //store login data in session variable
+                //create jwt token
+
+                let obj = {};
+                obj.userDetails = data[0];
+                obj.token = jwt.sign(data[0], "newtonschool", {
+                    expiresIn: 60000
+                });
+                res.status(200).json(obj);
             }
             else {
                 //password incorrect

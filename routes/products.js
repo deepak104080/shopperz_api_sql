@@ -4,6 +4,8 @@ const router = express.Router();
 
 const db = require('../db');
 
+const jwt = require('jsonwebtoken');
+
 
 // http://localhost:4000/products/allproducts
 router.get('/allproducts', async (req, res) =>{
@@ -46,18 +48,45 @@ router.post('/addproduct', async (req, res) => {
 // }) 
 
 
+const verifyJwt = (req, res, next) => {
+    const token = req.headers["x-access-token"];
+    console.log('token', token);
+
+
+    if(!token)(
+        res.status(400).json({err: 'Token Missing'})
+    )
+    else {
+        jwt.verify(token, "newtonschool", (err, decoded) => {
+            if(err) {
+                res.status(400).json({err: 'Token Invalid'})
+            }
+            else {
+                //favourable case - all good
+                console.log('decoded', decoded);
+                next();
+            }
+        })
+    }
+}
+
+
 // http://localhost:4000/products/searchbyid/{product_id}
-router.get('/searchbyid/:tempid', async (req, res) =>{
+router.get('/searchbyid/:tempid', verifyJwt, async (req, res) =>{
     console.log(req.params.tempid);
     let temp = req.params.tempid;
+
+
     try{
-        const response = await db.promise().query(`SELECT * FROM products WHERE id= ${temp}`);
-        
-        res.status(200).json(response[0][0]);
-    }
-    catch(err){
-        res.status(400).json({Error: err.message})
-    }
+            const response = await db.promise().query(`SELECT * FROM products WHERE id= ${temp}`);
+            //check in session varibale for loginstatus
+            res.status(200).json(response[0][0]);
+            //else return error
+        }
+        catch(err){
+            res.status(400).json({Error: err.message})
+        }
+    
 }) 
 
 // http://localhost:4000/products/searchbycategory/{category}
